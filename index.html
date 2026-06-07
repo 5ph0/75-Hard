@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>75 HARD — Weight Loss Edition</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="75 HARD">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a; --surface: #111111; --surface2: #1a1a1a; --border: #2a2a2a;
+  --accent: #e8f53a; --accent2: #ff4d1c; --text: #f0f0f0; --muted: #666;
+  --blue: #3a9fff; --purple: #b45aff;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* HEADER */
+.header { position: relative; padding: 60px 40px 40px; border-bottom: 1px solid var(--border); background: var(--bg); overflow: hidden; }
+.header::before { content: '75'; position: absolute; right: -20px; top: -30px; font-family: 'Bebas Neue', sans-serif; font-size: 280px; color: rgba(232,245,58,0.04); line-height: 1; pointer-events: none; user-select: none; }
+.header-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.header-tag::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--accent); }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 10vw, 96px); line-height: 0.9; letter-spacing: 0.02em; color: var(--text); }
+h1 span { color: var(--accent); }
+.header-sub { margin-top: 16px; font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+
+/* PROGRESS BAR */
+.progress-bar-wrap { padding: 32px 40px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.progress-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+.progress-count { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); letter-spacing: 0.05em; }
+.progress-count span { font-size: 16px; color: var(--muted); }
+.bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 3px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); width: 0%; }
+
+/* STREAK BAR */
+.streak-bar { display: flex; align-items: center; gap: 16px; padding: 20px 40px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.streak-item { display: flex; flex-direction: column; gap: 2px; }
+.streak-val { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); line-height: 1; }
+.streak-lbl { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+.streak-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
+.reset-btn { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 8px 16px; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+.reset-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* RULES */
+.rules-section { padding: 40px; border-bottom: 1px solid var(--border); }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.05em; color: var(--text); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
+.rules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.rule-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 20px; border-radius: 4px; }
+.rule-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--accent); line-height: 1; opacity: 0.3; margin-bottom: 4px; }
+.rule-title { font-size: 13px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); margin-bottom: 6px; }
+.rule-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* WORKOUT SECTION */
+.workout-section { padding: 40px; border-bottom: 1px solid var(--border); }
+.week-group { margin-bottom: 32px; }
+.week-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--accent2); text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+/* WEEK EXPORT BTN */
+.week-export-btn { float: right; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; cursor: pointer; border-radius: 2px; transition: all 0.2s; margin-top: -2px; }
+.week-export-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* DAY CARD */
+.day-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; overflow: hidden; transition: border-color 0.2s; }
+.day-card.completed { border-color: var(--accent); background: rgba(232,245,58,0.03); }
+.day-card.has-review { border-left: 3px solid var(--blue); }
+.day-card.completed.has-review { border-color: var(--accent); border-left: 3px solid var(--blue); }
+
+.day-header { display: flex; align-items: center; padding: 16px 20px; cursor: pointer; gap: 16px; user-select: none; }
+.day-num { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--muted); min-width: 40px; line-height: 1; }
+.day-card.completed .day-num { color: var(--accent); }
+.day-name { flex: 1; }
+.day-name .name { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text); }
+.day-name .type { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.day-card.completed .day-name .name { color: var(--accent); }
+
+/* MUSCLE TAGS */
+.muscle-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.muscle-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 2px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+.muscle-tag.primary { background: rgba(232,245,58,0.08); border-color: rgba(232,245,58,0.3); color: var(--accent); }
+
+.x-btn { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 4px; background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: transparent; flex-shrink: 0; }
+.x-btn:hover { border-color: var(--accent); color: rgba(232,245,58,0.3); }
+.day-card.completed .x-btn { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
+
+/* REVIEW INDICATOR */
+.review-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; opacity: 0; transition: opacity 0.2s; }
+.has-review .review-dot { opacity: 1; }
+
+.day-expand { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: transform 0.3s; flex-shrink: 0; font-size: 18px; }
+.day-card.open .day-expand { transform: rotate(180deg); }
+
+.day-content { display: none; padding: 0 20px 20px 76px; border-top: 1px solid var(--border); }
+.day-card.open .day-content { display: block; }
+
+/* VARIATION BADGE */
+.variation-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; margin-bottom: 12px; margin-top: 12px; }
+.variation-badge.var-a { background: rgba(232,245,58,0.1); color: var(--accent); border: 1px solid rgba(232,245,58,0.3); }
+.variation-badge.var-b { background: rgba(255,77,28,0.1); color: var(--accent2); border: 1px solid rgba(255,77,28,0.3); }
+.variation-badge.var-c { background: rgba(58,159,255,0.1); color: var(--blue); border: 1px solid rgba(58,159,255,0.3); }
+
+.workout-block { margin-top: 16px; }
+.block-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--accent2); text-transform: uppercase; margin-bottom: 10px; }
+.exercise-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.exercise-table th { text-align: left; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.exercise-table td { padding: 8px 8px; border-bottom: 1px solid rgba(42,42,42,0.5); color: var(--text); font-size: 12px; }
+.exercise-table tr:last-child td { border-bottom: none; }
+.pill { display: inline-block; background: var(--border); border-radius: 2px; padding: 2px 8px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.bodyweight-tag { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--blue); letter-spacing: 0.1em; margin-left: 4px; }
+.rest-day { padding: 20px; text-align: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.1em; }
+
+/* REVIEW SECTION inside day */
+.review-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.review-section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--blue); text-transform: uppercase; margin-bottom: 8px; }
+.review-display { background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--blue); border-radius: 4px; padding: 12px; font-size: 13px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+.review-edit-btn { margin-top: 8px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 12px; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+.review-edit-btn:hover { border-color: var(--blue); color: var(--blue); }
+.no-review-prompt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+
+/* GRID TRACKER */
+.tracker-section { padding: 40px; }
+.tracker-grid { display: grid; grid-template-columns: repeat(15, 1fr); gap: 6px; margin-top: 24px; }
+@media (max-width: 600px) {
+  .tracker-grid { grid-template-columns: repeat(10, 1fr); }
+  .header, .rules-section, .workout-section, .tracker-section, .progress-bar-wrap, .streak-bar { padding: 24px 20px; }
+  .day-content { padding: 0 16px 16px 16px; }
+}
+.grid-cell { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); cursor: pointer; transition: all 0.15s; background: var(--surface); position: relative; }
+.grid-cell:hover { border-color: var(--accent); }
+.grid-cell.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
+.grid-cell.done::after { content: '✕'; font-size: 14px; font-weight: 700; }
+.grid-cell.done.has-r::before { content: ''; position: absolute; top: 2px; right: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+.grid-cell:not(.done)::before { content: attr(data-day); font-size: 9px; }
+.grid-cell.done.has-r::after { content: '✕'; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 12px 28px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.1em; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── REVIEW MODAL ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.overlay.show { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border-radius: 16px 16px 0 0; padding: 28px 24px 40px; transform: translateY(40px); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); border-top: 1px solid var(--border); }
+.overlay.show .modal { transform: translateY(0); }
+.modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.05em; color: var(--text); margin-bottom: 4px; }
+.modal-title span { color: var(--blue); }
+.modal-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 20px; }
+.modal-rating { display: flex; gap: 8px; margin-bottom: 16px; }
+.rating-btn { flex: 1; padding: 10px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em; cursor: pointer; text-align: center; transition: all 0.2s; }
+.rating-btn:hover { border-color: var(--accent); color: var(--accent); }
+.rating-btn.selected { background: rgba(232,245,58,0.1); border-color: var(--accent); color: var(--accent); }
+.rating-btn.fire.selected { background: rgba(255,77,28,0.1); border-color: var(--accent2); color: var(--accent2); }
+.review-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; outline: none; resize: none; min-height: 120px; transition: border-color 0.2s; }
+.review-textarea:focus { border-color: var(--blue); }
+.review-textarea::placeholder { color: var(--muted); }
+.modal-hint { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.08em; margin-top: 8px; margin-bottom: 20px; }
+.modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-skip { padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-save-review { padding: 14px; border: none; border-radius: 8px; background: var(--blue); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.btn-save-review:hover { opacity: 0.9; }
+
+/* WEEKLY EXPORT MODAL */
+.export-modal { background: var(--surface); border-radius: 16px 16px 0 0; padding: 28px 24px 40px; transform: translateY(40px); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); border-top: 1px solid var(--border); max-height: 85vh; overflow-y: auto; }
+.overlay.show .export-modal { transform: translateY(0); }
+.export-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; font-family: 'DM Mono', monospace; max-height: 300px; overflow-y: auto; margin-bottom: 16px; }
+.btn-copy { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--accent); color: #0a0a0a; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; margin-bottom: 10px; transition: opacity 0.2s; }
+.btn-copy:hover { opacity: 0.9; }
+.btn-close-export { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-tag">Weight Loss Edition</div>
+  <h1>75 <span>HARD</span></h1>
+  <p class="header-sub">4 DAYS / WEEK · 60 MIN / SESSION · FASTED MORNING · NO EXCUSES</p>
+</header>
+
+<div class="streak-bar">
+  <div class="streak-item"><div class="streak-val" id="daysCompleted">0</div><div class="streak-lbl">Days Done</div></div>
+  <div class="streak-divider"></div>
+  <div class="streak-item"><div class="streak-val" id="daysRemaining">75</div><div class="streak-lbl">Days Left</div></div>
+  <div class="streak-divider"></div>
+  <div class="streak-item"><div class="streak-val" id="currentStreak">0</div><div class="streak-lbl">Streak</div></div>
+  <div class="streak-divider"></div>
+  <div class="streak-item"><div class="streak-val" id="completionPct">0%</div><div class="streak-lbl">Complete</div></div>
+  <button class="reset-btn" onclick="resetAll()">↺ Reset</button>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-meta">
+    <span class="progress-label">Overall Progress</span>
+    <span class="progress-count" id="progressLabel">0 <span>/ 75 days</span></span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="progressFill"></div></div>
+</div>
+
+<!-- RULES -->
+<div class="rules-section">
+  <div class="section-title">The Rules</div>
+  <div class="rules-grid">
+    <div class="rule-card"><div class="rule-num">01</div><div class="rule-title">Train 4x Per Week</div><div class="rule-desc">Follow the programme. Miss a day — restart from Day 1.</div></div>
+    <div class="rule-card"><div class="rule-num">02</div><div class="rule-title">Fasted Morning Workouts</div><div class="rule-desc">Train before 12 PM. Water only before training.</div></div>
+    <div class="rule-card"><div class="rule-num">03</div><div class="rule-title">Intermittent Fasting</div><div class="rule-desc">Eat only within your 12 PM – 8 PM window. No exceptions.</div></div>
+    <div class="rule-card"><div class="rule-num">04</div><div class="rule-title">3L Water Daily</div><div class="rule-desc">Hit 3 litres every single day — training days and rest days.</div></div>
+    <div class="rule-card"><div class="rule-num">05</div><div class="rule-title">No Junk Food</div><div class="rule-desc">Clean eating only. No alcohol, takeaways, or processed food for 75 days.</div></div>
+    <div class="rule-card"><div class="rule-num">06</div><div class="rule-title">Daily Progress Photo</div><div class="rule-desc">Same lighting, same angle, every day. You'll thank yourself at the end.</div></div>
+    <div class="rule-card"><div class="rule-num">07</div><div class="rule-title">Read 10 Pages Daily</div><div class="rule-desc">Non-fiction or personal development. Audiobooks don't count.</div></div>
+    <div class="rule-card"><div class="rule-num">08</div><div class="rule-title">Write a Daily Review</div><div class="rule-desc">After checking off each day, log how the session felt. Build the habit of reflection.</div></div>
+  </div>
+</div>
+
+<!-- WORKOUT DAYS -->
+<div class="workout-section">
+  <div class="section-title">75-Day Programme</div>
+  <div id="programmeContainer"></div>
+</div>
+
+<!-- GRID TRACKER -->
+<div class="tracker-section">
+  <div class="section-title">Day Grid</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace;">Tap a cell to mark complete · Blue dot = review written</p>
+  <div class="tracker-grid" id="trackerGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- REVIEW MODAL -->
+<div class="overlay" id="review-overlay">
+  <div class="modal">
+    <div class="modal-title">Day <span id="review-day-num">01</span> Review</div>
+    <div class="modal-sub" id="review-day-name">Upper Body · Resistance + Cardio</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em;margin-bottom:12px">How did it feel?</div>
+    <div class="modal-rating">
+      <div class="rating-btn" onclick="setRating('💀')" id="r-💀">💀 Destroyed</div>
+      <div class="rating-btn" onclick="setRating('🔥')" id="r-🔥">🔥 Strong</div>
+      <div class="rating-btn" onclick="setRating('✅')" id="r-✅">✅ Solid</div>
+      <div class="rating-btn" onclick="setRating('😤')" id="r-😤">😤 Pushed</div>
+    </div>
+    <textarea class="review-textarea" id="review-text" placeholder="Write your review... What went well? What was hard? How are you feeling? Any PRs?"></textarea>
+    <div class="modal-hint">This gets saved to your weekly journal. Export it any time.</div>
+    <div class="modal-actions">
+      <button class="btn-skip" onclick="skipReview()">Skip for now</button>
+      <button class="btn-save-review" onclick="saveReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY EXPORT MODAL -->
+<div class="overlay" id="export-overlay">
+  <div class="export-modal">
+    <div class="modal-title" style="margin-bottom:4px">Week <span id="export-week-num" style="color:var(--accent)">1</span> Journal</div>
+    <div class="modal-sub" style="margin-bottom:16px">Your workout reviews for the week</div>
+    <div class="export-content" id="export-content"></div>
+    <button class="btn-copy" onclick="copyExport()">📋 Copy to Clipboard</button>
+    <button class="btn-close-export" onclick="closeExport()">Close</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// WORKOUT DATABASE — 3 variations per slot
+// Each variation targets different muscle groups
+// ─────────────────────────────────────────
+const workoutVariations = {
+  // SLOT 0: Upper Body Push+Pull (Mon)
+  upper: [
+    {
+      varLabel: 'Variation A — Chest & Back Focus', varClass: 'var-a',
+      muscles: ['chest','back','shoulders','biceps','triceps'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Treadmill walk', sets: '1', reps: '5 min', bw: false }] },
+        { label: 'Push — Chest & Triceps', exercises: [
+          { ex: 'DB Bench Press', sets: '4', reps: '12', bw: false },
+          { ex: 'DB Incline Press', sets: '3', reps: '10', bw: false },
+          { ex: 'Close-Grip Push-Ups', sets: '3', reps: '15', bw: true },
+          { ex: 'Tricep Dips (chair)', sets: '3', reps: '12', bw: true },
+          { ex: 'Diamond Push-Ups', sets: '2', reps: '10', bw: true },
+        ]},
+        { label: 'Pull — Back & Biceps', exercises: [
+          { ex: 'Pull-Ups (door bar)', sets: '3', reps: 'Max', bw: true },
+          { ex: 'DB Bent-Over Row', sets: '4', reps: '12', bw: false },
+          { ex: 'DB Bicep Curl', sets: '3', reps: '12', bw: false },
+          { ex: 'Resistance Band Face Pulls', sets: '3', reps: '15', bw: false },
+        ]},
+        { label: 'Abs Finisher', exercises: [
+          { ex: 'Plank', sets: '3', reps: '45 sec', bw: true },
+          { ex: 'Leg Raises', sets: '3', reps: '15', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill Zone 2', sets: '1', reps: '12 min', bw: false }] }
+      ]
+    },
+    {
+      varLabel: 'Variation B — Shoulders & Arms Focus', varClass: 'var-b',
+      muscles: ['shoulders','triceps','biceps','abs','back'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Arm circles + band pull-aparts', sets: '1', reps: '5 min', bw: true }] },
+        { label: 'Shoulders', exercises: [
+          { ex: 'DB Shoulder Press', sets: '4', reps: '12', bw: false },
+          { ex: 'DB Lateral Raise', sets: '3', reps: '15', bw: false },
+          { ex: 'DB Front Raise', sets: '3', reps: '12', bw: false },
+          { ex: 'Pike Push-Ups', sets: '3', reps: '10', bw: true },
+        ]},
+        { label: 'Arms — Triceps & Biceps', exercises: [
+          { ex: 'Tricep Overhead Extension (DB)', sets: '3', reps: '12', bw: false },
+          { ex: 'Tricep Dips (chair)', sets: '3', reps: '15', bw: true },
+          { ex: 'Hammer Curl', sets: '3', reps: '12', bw: false },
+          { ex: 'Resistance Band Curl', sets: '3', reps: '15', bw: false },
+        ]},
+        { label: 'Core + Pull', exercises: [
+          { ex: 'Chin-Ups (door bar)', sets: '3', reps: 'Max', bw: true },
+          { ex: 'Bicycle Crunches', sets: '3', reps: '20', bw: true },
+          { ex: 'Ab Wheel / Plank Reach', sets: '3', reps: '10', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill Zone 2', sets: '1', reps: '12 min', bw: false }] }
+      ]
+    },
+    {
+      varLabel: 'Variation C — Full Upper Power', varClass: 'var-c',
+      muscles: ['chest','back','shoulders','core','triceps','biceps'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Treadmill light jog', sets: '1', reps: '5 min', bw: false }] },
+        { label: 'Power Compound', exercises: [
+          { ex: 'Wide Push-Ups', sets: '4', reps: '20', bw: true },
+          { ex: 'Pull-Ups (door bar)', sets: '4', reps: 'Max', bw: true },
+          { ex: 'DB Bent-Over Row', sets: '4', reps: '10', bw: false },
+          { ex: 'DB Arnold Press', sets: '3', reps: '12', bw: false },
+        ]},
+        { label: 'Superset — Arms', exercises: [
+          { ex: 'DB Curl → Tricep Press (superset)', sets: '3', reps: '10 each', bw: false },
+          { ex: 'Band Bicep Curl → Band Tricep Pushdown', sets: '3', reps: '12 each', bw: false },
+        ]},
+        { label: 'Core Circuit', exercises: [
+          { ex: 'Plank', sets: '3', reps: '60 sec', bw: true },
+          { ex: 'Dead Bug', sets: '3', reps: '10 each side', bw: true },
+          { ex: 'Mountain Climbers', sets: '2', reps: '30 sec', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill incline walk', sets: '1', reps: '10 min', bw: false }] }
+      ]
+    }
+  ],
+
+  // SLOT 2: HIIT (Wed)
+  hiit: [
+    {
+      varLabel: 'Variation A — Treadmill + Mat Circuit', varClass: 'var-a',
+      muscles: ['full body','cardio','core'],
+      blocks: [
+        { label: 'Treadmill HIIT', exercises: [{ ex: '1 min sprint / 1.5 min walk', sets: '10', reps: 'rounds · 25 min', bw: false }] },
+        { label: 'Mat Circuit × 4 Rounds', exercises: [
+          { ex: 'Burpees', sets: '4', reps: '40 sec', bw: true },
+          { ex: 'Mountain Climbers', sets: '4', reps: '40 sec', bw: true },
+          { ex: 'Band Squat Jump', sets: '4', reps: '40 sec', bw: false },
+          { ex: 'Rest', sets: '4', reps: '40 sec', bw: false },
+        ]},
+        { label: 'Abs Blast', exercises: [
+          { ex: 'Crunches', sets: '3', reps: '20', bw: true },
+          { ex: 'Leg Raises', sets: '3', reps: '15', bw: true },
+          { ex: 'Russian Twists', sets: '3', reps: '20', bw: true },
+        ]},
+        { label: 'Cool Down', exercises: [{ ex: 'Treadmill walk', sets: '1', reps: '8 min', bw: false }] }
+      ]
+    },
+    {
+      varLabel: 'Variation B — Bodyweight Tabata', varClass: 'var-b',
+      muscles: ['full body','cardio','glutes','core'],
+      blocks: [
+        { label: 'Tabata Block 1 (20s on / 10s off × 8)', exercises: [
+          { ex: 'Jump Squats', sets: '8', reps: '20 sec', bw: true },
+          { ex: 'High Knees', sets: '8', reps: '20 sec', bw: true },
+        ]},
+        { label: 'Tabata Block 2', exercises: [
+          { ex: 'Burpees', sets: '8', reps: '20 sec', bw: true },
+          { ex: 'Push-Ups', sets: '8', reps: '20 sec', bw: true },
+        ]},
+        { label: 'Tabata Block 3', exercises: [
+          { ex: 'Lateral Shuffle', sets: '8', reps: '20 sec', bw: true },
+          { ex: 'Plank Shoulder Taps', sets: '8', reps: '20 sec', bw: true },
+        ]},
+        { label: 'Treadmill Finisher', exercises: [{ ex: 'Zone 2 walk / jog', sets: '1', reps: '15 min', bw: false }] },
+        { label: 'Core Finisher', exercises: [
+          { ex: 'Bicycle Crunches', sets: '3', reps: '25', bw: true },
+          { ex: 'Plank', sets: '2', reps: '60 sec', bw: true },
+        ]}
+      ]
+    },
+    {
+      varLabel: 'Variation C — Resistance Band HIIT', varClass: 'var-c',
+      muscles: ['full body','cardio','glutes','shoulders'],
+      blocks: [
+        { label: 'Treadmill Warm-Up HIIT', exercises: [{ ex: '45s sprint / 90s walk', sets: '8', reps: 'rounds · 18 min', bw: false }] },
+        { label: 'Band Circuit × 4 Rounds', exercises: [
+          { ex: 'Band Squat to Press', sets: '4', reps: '15', bw: false },
+          { ex: 'Band Deadlift', sets: '4', reps: '15', bw: false },
+          { ex: 'Band Row', sets: '4', reps: '15', bw: false },
+          { ex: 'Band Lateral Walk', sets: '4', reps: '20 steps', bw: false },
+        ]},
+        { label: 'Core Circuit', exercises: [
+          { ex: 'Plank to Downdog', sets: '3', reps: '10', bw: true },
+          { ex: 'V-Sit Hold', sets: '3', reps: '30 sec', bw: true },
+          { ex: 'Toe Touches', sets: '3', reps: '20', bw: true },
+        ]},
+        { label: 'Cool Down', exercises: [{ ex: 'Treadmill walk + stretch', sets: '1', reps: '10 min', bw: false }] }
+      ]
+    }
+  ],
+
+  // SLOT 4: Lower Body + Core (Fri)
+  lower: [
+    {
+      varLabel: 'Variation A — Quads & Glutes Focus', varClass: 'var-a',
+      muscles: ['quads','glutes','hamstrings','abs'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Treadmill walk + leg swings', sets: '1', reps: '5 min', bw: true }] },
+        { label: 'Lower Body', exercises: [
+          { ex: 'DB Goblet Squat', sets: '4', reps: '12', bw: false },
+          { ex: 'DB Romanian Deadlift', sets: '4', reps: '12', bw: false },
+          { ex: 'DB Walking Lunges', sets: '3', reps: '10 each leg', bw: false },
+          { ex: 'Band Glute Bridge', sets: '3', reps: '20', bw: false },
+          { ex: 'Bodyweight Sumo Squat', sets: '3', reps: '15', bw: true },
+        ]},
+        { label: 'Core Superset × 3', exercises: [
+          { ex: 'Plank', sets: '3', reps: '45 sec', bw: true },
+          { ex: 'Bicycle Crunches', sets: '3', reps: '20', bw: true },
+          { ex: 'Leg Raises', sets: '3', reps: '15', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill Zone 2', sets: '1', reps: '15 min', bw: false }] }
+      ]
+    },
+    {
+      varLabel: 'Variation B — Hamstrings & Core Focus', varClass: 'var-b',
+      muscles: ['hamstrings','glutes','core','lower back'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Treadmill light jog', sets: '1', reps: '5 min', bw: false }] },
+        { label: 'Posterior Chain', exercises: [
+          { ex: 'DB Stiff-Leg Deadlift', sets: '4', reps: '12', bw: false },
+          { ex: 'Single-Leg Glute Bridge', sets: '3', reps: '12 each', bw: true },
+          { ex: 'DB Step-Ups (bench)', sets: '3', reps: '10 each', bw: false },
+          { ex: 'Band Hip Thrust', sets: '3', reps: '20', bw: false },
+          { ex: 'Donkey Kicks', sets: '3', reps: '15 each', bw: true },
+        ]},
+        { label: 'Core Strength', exercises: [
+          { ex: 'Dead Bug', sets: '3', reps: '10 each side', bw: true },
+          { ex: 'Side Plank', sets: '3', reps: '30 sec each', bw: true },
+          { ex: 'Reverse Crunches', sets: '3', reps: '15', bw: true },
+          { ex: 'Flutter Kicks', sets: '3', reps: '30 sec', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill incline walk', sets: '1', reps: '15 min', bw: false }] }
+      ]
+    },
+    {
+      varLabel: 'Variation C — Full Legs + Abs Burn', varClass: 'var-c',
+      muscles: ['quads','hamstrings','glutes','calves','abs'],
+      blocks: [
+        { label: 'Warm-Up', exercises: [{ ex: 'Treadmill walk', sets: '1', reps: '5 min', bw: false }] },
+        { label: 'Leg Circuit × 4 Rounds', exercises: [
+          { ex: 'Jump Squat', sets: '4', reps: '10', bw: true },
+          { ex: 'DB Reverse Lunge', sets: '4', reps: '10 each', bw: false },
+          { ex: 'Band Lateral Walk', sets: '4', reps: '15 steps each', bw: false },
+          { ex: 'Calf Raises', sets: '4', reps: '20', bw: true },
+        ]},
+        { label: 'Abs Blast', exercises: [
+          { ex: 'Crunches', sets: '3', reps: '25', bw: true },
+          { ex: 'Russian Twists', sets: '3', reps: '20', bw: true },
+          { ex: 'Plank', sets: '3', reps: '60 sec', bw: true },
+          { ex: 'V-Sits', sets: '3', reps: '12', bw: true },
+        ]},
+        { label: 'Cardio Finisher', exercises: [{ ex: 'Treadmill steady pace', sets: '1', reps: '15 min', bw: false }] }
+      ]
+    }
+  ],
+
+  // SLOT 5: Steady-State Cardio (Sat)
+  cardio: [
+    {
+      varLabel: 'Variation A — Long Zone 2 + Mobility', varClass: 'var-a',
+      muscles: ['cardio','mobility'],
+      blocks: [
+        { label: 'Zone 2 Cardio', exercises: [{ ex: 'Treadmill conversational pace', sets: '1', reps: '45 min', bw: false }] },
+        { label: 'Mobility & Stretch', exercises: [
+          { ex: 'Hip flexor stretch', sets: '1', reps: '60 sec each', bw: true },
+          { ex: 'Hamstring stretch', sets: '1', reps: '60 sec each', bw: true },
+          { ex: 'Thoracic rotation', sets: '1', reps: '10 each side', bw: true },
+          { ex: 'Shoulder cross-body stretch', sets: '1', reps: '45 sec each', bw: true },
+        ]}
+      ]
+    },
+    {
+      varLabel: 'Variation B — Incline Walk + Active Recovery', varClass: 'var-b',
+      muscles: ['cardio','glutes','calves'],
+      blocks: [
+        { label: 'Incline Treadmill Walk', exercises: [{ ex: 'Incline walk (8–12% grade)', sets: '1', reps: '40 min', bw: false }] },
+        { label: 'Bodyweight Active Recovery', exercises: [
+          { ex: 'Slow Bodyweight Squats', sets: '2', reps: '15', bw: true },
+          { ex: 'Cat-Cow Stretch', sets: '1', reps: '10', bw: true },
+          { ex: 'Child\'s Pose', sets: '1', reps: '60 sec', bw: true },
+          { ex: 'Pigeon Pose', sets: '1', reps: '45 sec each', bw: true },
+        ]}
+      ]
+    },
+    {
+      varLabel: 'Variation C — Cardio + Core Active Day', varClass: 'var-c',
+      muscles: ['cardio','core','mobility'],
+      blocks: [
+        { label: 'Treadmill', exercises: [{ ex: 'Zone 2 jog / walk', sets: '1', reps: '35 min', bw: false }] },
+        { label: 'Core Active Recovery', exercises: [
+          { ex: 'Plank', sets: '3', reps: '30 sec', bw: true },
+          { ex: 'Dead Bug', sets: '3', reps: '8 each', bw: true },
+          { ex: 'Bird Dog', sets: '3', reps: '8 each', bw: true },
+        ]},
+        { label: 'Full Stretch', exercises: [
+          { ex: 'Full body stretch routine', sets: '1', reps: '15 min', bw: true },
+        ]}
+      ]
+    }
+  ]
+};
+
+// Which variation to use per week cycle (week 1 = A, week 2 = B, week 3 = C, repeat)
+function getVariation(dayIndex, slot) {
+  const weekNum = Math.floor(dayIndex / 7);
+  const varIndex = weekNum % 3;
+  const map = { 0: 'upper', 2: 'hiit', 4: 'lower', 5: 'cardio' };
+  const key = map[slot];
+  if (!key) return null;
+  return workoutVariations[key][varIndex];
+}
+
+// Full 7-day template
+function getDayTemplate(dayIndex) {
+  const slot = dayIndex % 7;
+  const templates = [
+    { name: 'Upper Body', type: 'Push · Pull · Arms · Abs', rest: false, slot: 0 },
+    { name: 'Rest Day', type: 'Active Recovery', rest: true },
+    { name: 'HIIT', type: 'High Intensity Interval Training', rest: false, slot: 2 },
+    { name: 'Rest Day', type: 'Active Recovery', rest: true },
+    { name: 'Lower Body + Core', type: 'Legs · Glutes · Abs', rest: false, slot: 4 },
+    { name: 'Steady-State Cardio', type: 'Zone 2 + Mobility', rest: false, slot: 5 },
+    { name: 'Rest Day', type: 'Full Rest', rest: true },
+  ];
+  return templates[slot];
+}
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+const STORAGE_KEY = '75hard_v2';
+const REVIEWS_KEY = '75hard_reviews_v1';
+
+function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+function loadReviews() { try { return JSON.parse(localStorage.getItem(REVIEWS_KEY) || '{}'); } catch { return {}; } }
+function saveReviews(r) { localStorage.setItem(REVIEWS_KEY, JSON.stringify(r)); }
+
+let state = loadState();
+let reviews = loadReviews();
+let pendingReviewDay = null;
+let currentRating = null;
+
+// ─────────────────────────────────────────
+// BUILD PROGRAMME
+// ─────────────────────────────────────────
+function buildProgramme() {
+  const container = document.getElementById('programmeContainer');
+  let html = '';
+  let weekNum = 1;
+
+  for (let i = 0; i < 75; i++) {
+    if (i % 7 === 0) {
+      if (i > 0) html += '</div></div>';
+      const weekStart = i + 1;
+      const weekEnd = Math.min(i + 7, 75);
+      const wNum = weekNum;
+      html += `<div class="week-group">
+        <div class="week-label">
+          Week ${wNum} — Days ${weekStart}–${weekEnd}
+          <button class="week-export-btn" onclick="exportWeek(${wNum})">📤 Export Reviews</button>
+        </div><div>`;
+      weekNum++;
+    }
+
+    const tmpl = getDayTemplate(i);
+    const dayNum = i + 1;
+    const isComplete = !!state[dayNum];
+    const hasReview = !!(reviews[dayNum]?.text || reviews[dayNum]?.rating);
+    const completedClass = isComplete ? ' completed' : '';
+    const reviewClass = hasReview ? ' has-review' : '';
+
+    if (!tmpl.rest) {
+      const variation = getVariation(i, tmpl.slot);
+      const musclesHtml = variation.muscles.map((m, idx) =>
+        `<span class="muscle-tag ${idx === 0 ? 'primary' : ''}">${m}</span>`
+      ).join('');
+
+      html += `<div class="day-card${completedClass}${reviewClass}" id="daycard-${dayNum}">
+        <div class="day-header" onclick="toggleDay(${dayNum})">
+          <div class="day-num">${String(dayNum).padStart(2,'0')}</div>
+          <div class="day-name">
+            <div class="name">${tmpl.name}</div>
+            <div class="type">${tmpl.type}</div>
+            <div class="muscle-tags">${musclesHtml}</div>
+          </div>
+          <div class="review-dot" title="Review written"></div>
+          <div class="x-btn" onclick="event.stopPropagation(); markDay(${dayNum})" title="Mark complete">✕</div>
+          <div class="day-expand">▾</div>
+        </div>
+        <div class="day-content">
+          <span class="variation-badge ${variation.varClass}">${variation.varLabel}</span>`;
+
+      variation.blocks.forEach(block => {
+        html += `<div class="workout-block">
+          <div class="block-label">${block.label}</div>
+          <table class="exercise-table">
+            <thead><tr><th>Exercise</th><th>Sets</th><th>Reps / Time</th></tr></thead><tbody>`;
+        block.exercises.forEach(ex => {
+          html += `<tr>
+            <td>${ex.ex}${ex.bw ? '<span class="bodyweight-tag">BW</span>' : ''}</td>
+            <td><span class="pill">${ex.sets}</span></td>
+            <td>${ex.reps}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      });
+
+      // Review section
+      const rev = reviews[dayNum];
+      html += `<div class="review-section">
+        <div class="review-section-label">📝 Day Review</div>`;
+      if (rev?.text || rev?.rating) {
+        html += `<div class="review-display">${rev.rating ? rev.rating + '  ' : ''}${rev.text || ''}</div>
+          <button class="review-edit-btn" onclick="openReviewModal(${dayNum}, true)">✏️ Edit Review</button>`;
+      } else if (isComplete) {
+        html += `<div class="no-review-prompt" style="color:var(--accent2)">No review yet — tap to add one</div>
+          <button class="review-edit-btn" onclick="openReviewModal(${dayNum}, true)" style="border-color:var(--accent2);color:var(--accent2);margin-top:8px">+ Write Review</button>`;
+      } else {
+        html += `<div class="no-review-prompt">Complete this day to unlock your review</div>`;
+      }
+      html += `</div></div></div>`;
+
+    } else {
+      html += `<div class="day-card${completedClass}" id="daycard-${dayNum}">
+        <div class="day-header" onclick="toggleDay(${dayNum})">
+          <div class="day-num">${String(dayNum).padStart(2,'0')}</div>
+          <div class="day-name"><div class="name">${tmpl.name}</div><div class="type">${tmpl.type}</div></div>
+          <div class="x-btn" onclick="event.stopPropagation(); markDay(${dayNum})">✕</div>
+        </div>
+        <div class="day-content"><div class="rest-day">Rest. Hydrate. Stretch. Read. 💧</div></div>
+      </div>`;
+    }
+  }
+
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+function toggleDay(dayNum) {
+  document.getElementById(`daycard-${dayNum}`)?.classList.toggle('open');
+}
+
+// ─────────────────────────────────────────
+// MARK DAY + TRIGGER REVIEW
+// ─────────────────────────────────────────
+function markDay(dayNum) {
+  if (state[dayNum]) {
+    // Unmark
+    delete state[dayNum];
+    saveState(state);
+    updateUI();
+    showToast(`Day ${dayNum} — Unmarked`);
+    buildProgramme(); // rebuild to update review section state
+    return;
+  }
+
+  // Mark complete
+  state[dayNum] = true;
+  saveState(state);
+  updateUI();
+
+  // Check if it's a workout day (not rest)
+  const tmpl = getDayTemplate(dayNum - 1);
+  if (!tmpl.rest) {
+    // Trigger review modal after short delay
+    setTimeout(() => openReviewModal(dayNum, false), 500);
+  } else {
+    showToast(`Day ${dayNum} — DONE ✕`);
+    buildProgramme();
+  }
+}
+
+// ─────────────────────────────────────────
+// REVIEW MODAL
+// ─────────────────────────────────────────
+function openReviewModal(dayNum, isEdit) {
+  pendingReviewDay = dayNum;
+  currentRating = reviews[dayNum]?.rating || null;
+
+  const tmpl = getDayTemplate(dayNum - 1);
+  document.getElementById('review-day-num').textContent = String(dayNum).padStart(2, '0');
+  document.getElementById('review-day-name').textContent = `${tmpl.name} · ${tmpl.type}`;
+  document.getElementById('review-text').value = reviews[dayNum]?.text || '';
+
+  // Reset rating buttons
+  ['💀','🔥','✅','😤'].forEach(r => {
+    const btn = document.getElementById(`r-${r}`);
+    if (btn) btn.classList.remove('selected');
+  });
+  if (currentRating) {
+    const btn = document.getElementById(`r-${currentRating}`);
+    if (btn) btn.classList.add('selected');
+  }
+
+  document.getElementById('review-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('review-text').focus(), 400);
+}
+
+function setRating(r) {
+  currentRating = currentRating === r ? null : r;
+  ['💀','🔥','✅','😤'].forEach(rating => {
+    const btn = document.getElementById(`r-${rating}`);
+    if (btn) btn.classList.toggle('selected', rating === currentRating);
+  });
+}
+
+function saveReview() {
+  const text = document.getElementById('review-text').value.trim();
+  if (!text && !currentRating) {
+    skipReview();
+    return;
+  }
+
+  reviews[pendingReviewDay] = {
+    text,
+    rating: currentRating,
+    date: new Date().toISOString(),
+    dayNum: pendingReviewDay
+  };
+  saveReviews(reviews);
+  closeReviewModal();
+  showToast(`Day ${pendingReviewDay} review saved ✓`);
+  buildProgramme();
+  updateGrid();
+}
+
+function skipReview() {
+  closeReviewModal();
+  showToast(`Day ${pendingReviewDay} — DONE ✕`);
+  buildProgramme();
+  updateGrid();
+}
+
+function closeReviewModal() {
+  document.getElementById('review-overlay').classList.remove('show');
+  pendingReviewDay = null;
+}
+
+// ─────────────────────────────────────────
+// WEEKLY EXPORT
+// ─────────────────────────────────────────
+function exportWeek(weekNum) {
+  const startDay = (weekNum - 1) * 7 + 1;
+  const endDay = Math.min(startDay + 6, 75);
+
+  let text = `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+  text += `75 HARD · WEEK ${weekNum} JOURNAL\n`;
+  text += `Days ${startDay}–${endDay}\n`;
+  text += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+  let hasAny = false;
+  for (let d = startDay; d <= endDay; d++) {
+    const tmpl = getDayTemplate(d - 1);
+    const done = !!state[d];
+    const rev = reviews[d];
+    text += `DAY ${String(d).padStart(2,'0')} — ${tmpl.name.toUpperCase()}\n`;
+    text += `Status: ${done ? '✅ Complete' : '⬜ Incomplete'}\n`;
+    if (rev?.rating || rev?.text) {
+      hasAny = true;
+      if (rev.rating) text += `Feeling: ${rev.rating}\n`;
+      if (rev.text) text += `Review: ${rev.text}\n`;
+    } else {
+      text += `Review: Not written yet\n`;
+    }
+    text += `\n`;
+  }
+
+  if (!hasAny) {
+    text += `No reviews written for this week yet.\nComplete workout days and write your reviews!\n`;
+  }
+
+  document.getElementById('export-week-num').textContent = weekNum;
+  document.getElementById('export-content').textContent = text;
+  document.getElementById('export-overlay').classList.add('show');
+}
+
+function copyExport() {
+  const text = document.getElementById('export-content').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard ✓');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Copied ✓');
+  });
+}
+
+function closeExport() {
+  document.getElementById('export-overlay').classList.remove('show');
+}
+
+// ─────────────────────────────────────────
+// GRID
+// ─────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('trackerGrid');
+  let html = '';
+  for (let i = 1; i <= 75; i++) {
+    const done = !!state[i];
+    const hasRev = !!(reviews[i]?.text || reviews[i]?.rating);
+    html += `<div class="grid-cell${done?' done':''}${done&&hasRev?' has-r':''}" data-day="${i}" onclick="markDay(${i})"></div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function updateGrid() {
+  for (let i = 1; i <= 75; i++) {
+    const cell = document.querySelector(`.grid-cell[data-day="${i}"]`);
+    if (!cell) continue;
+    const done = !!state[i];
+    const hasRev = !!(reviews[i]?.text || reviews[i]?.rating);
+    cell.className = `grid-cell${done?' done':''}${done&&hasRev?' has-r':''}`;
+  }
+}
+
+function updateDayCards() {
+  for (let i = 1; i <= 75; i++) {
+    const card = document.getElementById(`daycard-${i}`);
+    if (!card) continue;
+    card.classList.toggle('completed', !!state[i]);
+    card.classList.toggle('has-review', !!(reviews[i]?.text || reviews[i]?.rating));
+  }
+}
+
+// ─────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────
+function calcStreak() {
+  // Find the highest consecutive completed day from 1
+  let streak = 0;
+  for (let i = 1; i <= 75; i++) {
+    if (state[i]) streak = i;
+    else break;
+  }
+  return streak;
+}
+
+function updateStats() {
+  const done = Object.keys(state).length;
+  const pct = Math.round((done / 75) * 100);
+  const streak = calcStreak();
+  document.getElementById('daysCompleted').textContent = done;
+  document.getElementById('daysRemaining').textContent = 75 - done;
+  document.getElementById('currentStreak').textContent = streak;
+  document.getElementById('completionPct').textContent = pct + '%';
+  document.getElementById('progressLabel').innerHTML = `${done} <span>/ 75 days</span>`;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function updateUI() {
+  updateStats();
+  updateGrid();
+}
+
+// ─────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ─────────────────────────────────────────
+// RESET
+// ─────────────────────────────────────────
+function resetAll() {
+  if (confirm('Reset ALL progress and reviews? This cannot be undone.')) {
+    state = {}; reviews = {};
+    saveState(state); saveReviews(reviews);
+    buildProgramme(); buildGrid(); updateStats();
+    showToast('Programme reset — Day 1');
+  }
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+buildProgramme();
+buildGrid();
+updateStats();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW registered:', reg.scope))
+        .catch(err => console.warn('SW failed:', err));
+    });
+  }
+</script>
+</body>
+</html>
